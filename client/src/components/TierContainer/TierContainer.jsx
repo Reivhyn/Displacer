@@ -1,77 +1,94 @@
 import React, { useEffect, useState } from 'react'
 
 // * COMPONENTS
-import TierRow from '../TierRow/TierRow'
-import TierTile from '../TierTile/TierTile'
-import Gutter from '../Gutter/Gutter'
+import TierRow from './TierRow/TierRow'
+import TierTileImage from './TierTile/TierTileImage'
+import Gutter from './Gutter/Gutter'
+
+// * MOCK DATABASE IMPORTS
+import {
+  mockTierTiles,
+  mockTierLabels,
+  mockDefaultTierColors,
+} from '../zMockDatabase/mockDatabase'
 
 // * CONTEXT
-import { contextTierTiles } from '../zusecontext/usecontext'
-import { characters } from '../zhelpers/mockTiles'
+import {
+  contextTierTiles,
+  contextTierLabels,
+  contextTierColors,
+} from './zTierContainerContexts/usecontext'
 
 // * HELPERS
-import { getPossibleTiers, selectTierPosition } from '../zhelpers/helpers'
+import {
+  getPossibleTiers,
+  selectTierPosition,
+} from './zTierContainerHelpers/helpers'
 
 // * PAGE LOGIC
 const TierContainer = () => {
   // * USESTATES
-  const [tierBoard, setTierBoard] = useState('')
-  const [tierLabel, setTierLabel] = useState(['S', 'A'])
-  const [tierColors, setTierColors] = useState([
-    'bg-purple-700',
-    'bg-purple-600',
-  ])
+  // value of the label each tier row is given
+  const [tierLabels, setTierLabels] = useState(mockTierLabels)
+
+  // array of tile objects used to construct the board
+  const [tierTiles, setTierTiles] = useState(mockTierTiles)
+
+  // used to render tier rows
+  const [tierRows, setTierRows] = useState('')
+
+  // default tier colors
+  const [tierColors, setTierColors] = useState(mockDefaultTierColors)
 
   // * FUNCTIONS
-  const createBoard = () => {
-    characters.forEach((character) => selectTierPosition(character))
-    const charactersByTier = getPossibleTiers(characters)
+  // const createBoard = () => {
+  //   mockTierTiles.forEach((tile) => selectTierPosition(tile))
+  //   const tilesByTier = getPossibleTiers(mockTierTiles)
 
-    return charactersByTier.map((tier, i) => (
-      <TierRow
-        key={`${tier[0].assignedPosition.tier}Tier`}
-        tierLabel={tier[0].assignedPosition.tier}
-        color="bg-purple-700"
-        characters={tier.map((character) => character.name)}
-        objects={tier}
-      />
+  //   return tilesByTier.map((tier, i) => (
+  //     <TierRow
+  //       key={`${tier[i].assignedPosition.tier}Tier`}
+  //       tierLabel={tier[i].assignedPosition.tier}
+  //       tile={tier}
+  //       color="bg-purple-700"
+  //     />
+  //   ))
+  // }
+
+  // render tier rows
+  const renderTierRows = () => {
+    return tierLabels.map((label, index) => (
+      <div key={`${label}Tier`}>
+        <TierRow index={index} />
+      </div>
     ))
   }
+
   // * USE EFFECTS
-
   useEffect(() => {
-    setTierBoard(createBoard())
-    const interval = setInterval(() => {
-      setTierBoard(createBoard)
-    }, 1000) // refresh every 3 seconds (adjust as needed)
+    setTierRows(renderTierRows)
+  }, [tierLabels])
 
-    return () => clearInterval(interval) // clean up on unmount
-  }, [])
+  // useEffect(() => {
+  //   setTierBoard(createBoard())
+  //   const interval = setInterval(() => {
+  //     setTierBoard(createBoard)
+  //   }, 1000) // refresh every 3 seconds (adjust as needed)
+
+  //   return () => clearInterval(interval) // clean up on unmount
+  // }, [])
 
   // * RENDER
-  return <>{tierBoard ? tierBoard : 'loading'}</>
+  return (
+    <contextTierLabels.Provider value={[tierLabels, setTierLabels]}>
+      <contextTierTiles.Provider value={[tierTiles, setTierTiles]}>
+        <contextTierColors.Provider value={[tierColors, setTierColors]}>
+          {tierRows ? tierRows : 'Loading Tier Rows'}
+          <Gutter />
+        </contextTierColors.Provider>
+      </contextTierTiles.Provider>
+    </contextTierLabels.Provider>
+  )
 }
-
-/* 
-return (
-    <>
-      <TierRow
-        tierLabel="S"
-        color="bg-purple-700"
-        characters={[
-          characters[0].name,
-          characters[1].name,
-          characters[2].name,
-          characters[3].name,
-        ]}
-      />
-      <TierRow
-        tierLabel="A"
-        color="bg-purple-600"
-        characters={[characters[4].name, characters[5].name]}
-      />
-      </>
-    )
-*/
 
 export default TierContainer

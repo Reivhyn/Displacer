@@ -32,7 +32,7 @@ import xiaoyuPNG from '../../assets/tekkenTiles/xiaoyu.png'
 import yoshimitsuPNG from '../../assets/tekkenTiles/yoshimitsu.png'
 import zafinaPNG from '../../assets/tekkenTiles/zafina.png'
 
-export const tiles = [
+export const mockTierTiles = [
   {
     //0
     name: 'Alisa',
@@ -261,4 +261,14 @@ export const tiles = [
     positions: [],
     assignedPosition: undefined,
   },
+]
+
+export const mockTierLabels = ['S', 'A', 'B', 'C', 'D']
+
+export const mockDefaultTierColors = [
+  'bg-purple-900', // S
+  'bg-fuchsia-700', // A
+  'bg-pink-600', // B
+  'bg-cyan-600', // C
+  'bg-blue-700', // D
 ]
