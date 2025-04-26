@@ -1,4 +1,4 @@
-// select the character based on their weighted position
+// assign postiotn to tile based on weighted randomness
 export function selectTierPosition(character) {
   const totalWeight = character.positions.reduce(
     (sum, position) => sum + position.weight,

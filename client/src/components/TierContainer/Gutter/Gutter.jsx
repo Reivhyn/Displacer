@@ -29,7 +29,7 @@ const Gutter = () => {
   // render gutter
   const renderGutter = () => {
     return tierTiles.map((tile, tileIndex) => (
-      <div key={tile.name}>
+      <div key={tile.name} className='relative inline-block'>
         <div onClick={() => toggleDropMenu(tile.name)}>
           <TierTileImage image={tile.image} name={tile.name} />
         </div>
@@ -37,7 +37,7 @@ const Gutter = () => {
           tile={tile}
           tileIndex={tileIndex}
           key={`${tile.name}DropMenu`}
-          className={dropMenuOpen[tile.name] ? '' : 'hidden'}
+          className={`absolute z-50 mt-2 ${dropMenuOpen[tile.name] ? '' : 'hidden'}`}
         />
       </div>
     ))
