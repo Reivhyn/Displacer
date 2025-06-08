@@ -38,9 +38,9 @@ export const mockTierTiles = [
     name: 'Alisa',
     image: alisaPNG,
     positions: [
-      { tier: 'S', position: 0, weight: 0.3 },
-      { tier: 'S', position: 1, weight: 0.3 },
-      { tier: 'S', position: 2, weight: 0.3 },
+      { tier: 'S', position: 0, weight: 30 },
+      // { tier: 'S', position: 1, weight: 30 },
+      // { tier: 'S', position: 2, weight: 30 },
     ],
     assignedPosition: undefined,
   },

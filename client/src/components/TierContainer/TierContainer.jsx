@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react'
 import TierRow from './TierRow/TierRow'
 import TierTileImage from './TierTile/TierTileImage'
 import Gutter from './Gutter/Gutter'
+import { SelectionBoard } from './SelectionBoard/SelectionBoard'
 
 // * MOCK DATABASE IMPORTS
 import {
@@ -14,16 +15,16 @@ import {
 
 // * CONTEXT
 import {
-  contextTierTiles,
-  contextTierLabels,
   contextTierColors,
-} from './zTierContainerContexts/usecontext'
+  contextTierTiles,
+  contextPlacedTiles,
+  contextTierLabels,
+  contextSelectionBoard,
+} from './zTierContainerContexts/useContext'
 
 // * HELPERS
-import {
-  getPossibleTiers,
-  selectTierPosition,
-} from './zTierContainerHelpers/helpers'
+import { assignWeightedPositions } from './zTierContainerHelpers/tierContainerHelpers'
+import { clamp } from 'framer-motion'
 
 // * PAGE LOGIC
 const TierContainer = () => {
@@ -35,25 +36,18 @@ const TierContainer = () => {
   const [tierTiles, setTierTiles] = useState(mockTierTiles)
 
   // used to render tier rows
-  const [tierRows, setTierRows] = useState('')
+  const [tierRows, setTierRows] = useState([])
+
+  // used to render selectionBoard
+  const [selectionBoard, setSelectionBoard] = useState()
 
   // default tier colors
   const [tierColors, setTierColors] = useState(mockDefaultTierColors)
 
-  // * FUNCTIONS
-  // const createBoard = () => {
-  //   mockTierTiles.forEach((tile) => selectTierPosition(tile))
-  //   const tilesByTier = getPossibleTiers(mockTierTiles)
+  // placedTiles - tiles placed on the board
+  const [placedTiles, setPlacedTiles] = useState('')
 
-  //   return tilesByTier.map((tier, i) => (
-  //     <TierRow
-  //       key={`${tier[i].assignedPosition.tier}Tier`}
-  //       tierLabel={tier[i].assignedPosition.tier}
-  //       tile={tier}
-  //       color="bg-purple-700"
-  //     />
-  //   ))
-  // }
+  // * FUNCTIONS
 
   // render tier rows
   const renderTierRows = () => {
@@ -66,25 +60,37 @@ const TierContainer = () => {
 
   // * USE EFFECTS
   useEffect(() => {
-    setTierRows(renderTierRows)
-  }, [tierLabels])
+    const interval = setInterval(() => {
+      setTierTiles((prev) => assignWeightedPositions(prev))
+    }, 1000) // refresh every 3 seconds (adjust as needed)
 
-  // useEffect(() => {
-  //   setTierBoard(createBoard())
-  //   const interval = setInterval(() => {
-  //     setTierBoard(createBoard)
-  //   }, 1000) // refresh every 3 seconds (adjust as needed)
+    return () => clearInterval(interval) // clean up on unmount
+  }, [])
 
-  //   return () => clearInterval(interval) // clean up on unmount
-  // }, [])
+  useEffect(() => {
+    console.log('tierTiles', tierTiles)
+  }, [tierTiles])
 
   // * RENDER
   return (
     <contextTierLabels.Provider value={[tierLabels, setTierLabels]}>
       <contextTierTiles.Provider value={[tierTiles, setTierTiles]}>
         <contextTierColors.Provider value={[tierColors, setTierColors]}>
-          {tierRows ? tierRows : 'Loading Tier Rows'}
-          <Gutter />
+          <contextPlacedTiles.Provider value={[placedTiles, setPlacedTiles]}>
+            <contextSelectionBoard.Provider
+              value={[selectionBoard, setSelectionBoard]}
+            >
+              {/*tierboard and selection board  */}
+              <div className="flex w-full gap-5">
+                <div className="w-3/4 bg-[url('/assets/background.png')]  bg-[length:auto_100%] bg-repeat-x bg-top">{renderTierRows()}</div>
+                <div className="w-1/4 bg-pink-">
+                  <SelectionBoard />
+                </div>
+              </div>
+
+              <Gutter />
+            </contextSelectionBoard.Provider>
+          </contextPlacedTiles.Provider>
         </contextTierColors.Provider>
       </contextTierTiles.Provider>
     </contextTierLabels.Provider>
